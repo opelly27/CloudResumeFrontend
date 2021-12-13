@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Oliver Pelly's Blog</title>
+  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://unpkg.com/splitting@1.0.0/dist/splitting.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="site-wrap">
+
+  <section data-scroll>
+    <h1 data-splitting>Introduction</h1>
+    <p>There are a variety of AWS services that I used to create this cloud resume, all of which provide different functionality. Here is a list of all the different technologies used. I will go into further detail about how each service was used, and what each was used for. 
+
+      <br></br>• S3 bucket
+      <br></br>• Cloudfront
+      <br></br>• AWS Lambda and Cloudwatch
+      <br></br>• DynamoDB
+      <br></br>• API Gateway
+      <br></br>• Route 53
+      <br></br>• AWS SSL certificate
+
+      </p>
+  </section>
+
+  <section data-scroll>
+    <h1 data-splitting>S3 Bucket, and Route 53</h1>
+    <p>To start things off, all the files for this cloud resume challenge are being hosted on an AWS S3 bucket, which is Amazon’s serverless option for web hosting and file storage. To host a website on an S3 bucket, all you need to do is configure the bucket for static website hosting, and then simply upload the files for your site. The S3 bucket will then have a public URL that can be accessed on the web. This URL is long and complicated however and is not something that anybody is going to remember. This is fine for buckets that are not intended to be accessed by visitors of your site directly, but is not ideal for public websites. This is where registering your own custom domain, and configuring it to work with Amazon’s Route 53 comes in. My domain was purchased on Godaddy and then configured to work on AWS by specifying the nameservers to Godaddy that were provided by the AWS hosted zone I created. </p>
+  </section>
+
+  <section  data-scroll>
+    <h1 data-splitting>Cloudfront CDN</h1>
+    <p>Having all the data for your website in an S3 bucket is great, but it means that every time a user comes to your website, they need to fetch the data from whatever AWS region your S3 bucket is set up in. This has performance ramifications, especially for users trying to access your site from locations physically far away from the AWS region you have chosen. Amazon’s solution to increase speed and reliability in this situation is Cloudfront. Cloudfront is a global content delivery network that caches the contents of an S3 bucket (or any of the many other supported AWS and non-AWS resources) to Amazon’s many edge locations around the country and around the world. This means that the content of your website is delivered quickly to visitors, no matter where they are in the world. Creating a Cloudfront distribution with the source being the AWS S3 bucket hosting the website files is all that needs to be done. From there I created an A record in the hosted zone that points my domain name at the Cloudfront distribution, and my website is now available when hitting the domain. 
+    </p>
+  </section>
+
+  <section  data-scroll>
+    <h1 data-splitting>AWS Lambda, API Gateway, and DynamoDB</h1>
+    <p>Now that I had a static website hosted on an S3 bucket, and accelerated by a Cloudfront CDN, it was time to add a dynamic “visitor count” section to my website. This will display a number corresponding to the number of times the webpage has been loaded. To start, I created a DynamoDB database that would simply have a key-value pair where the value was an integer that would count up every time the page was loaded. The code to actually reach out to the DynamoDB database, and increment the number would be written in an AWS Lambda function using Python 3.9. The Lambda function reaches out to the DynamoDB database, increments the value in the visitor count table by 1, and then returns that new value. To make the Lambda function callable from a user loading the page, I needed an API endpoint that could be called once the page was loaded. This was done using the AWS API Gateway, which creates an HTTP API endpoint that can be pointed at an HTTP resource, or, in this case, a Lambda function. With this setup, it was just a matter of adding a script tag to the Index.html file within the S3 bucket that makes a call to the API endpoint and displays the resulting value in a “visitor count” section on the website.
+    </p>
+  </section>
+
+  <section  data-scroll>
+    <h1 data-splitting>Conculsion</h1>
+    <p>I learned a lot about the AWS platform from doing this cloud resume challenge. Previously I have had experience hosting websites, but I have never quite understood the process of configuring DNS on a new domain to get it to work properly. This is always a step that I would skip over, never really taking the time to understand how it worked, until now. I have also never had any experience with serverless functions, such as AWS Lambda. I have previously created microservices before, but always either on-premises or in a cloud virtual machine. I can clearly see the benefits of a serverless approach, over that of a VM. Only paying for the exact usage of a microservice, rather than renting a VM for an entire month certainly makes sense for a wide variety of use cases. Overall I enjoyed this cloud resume challange, and would highly recommend it for anybody looking to learn more about cloud services, and web development in general!
+    </p>
+  </section>
+
+</div>
+<!-- partial -->
+  <script src='https://unpkg.com/splitting@1.0.0/dist/splitting.js'></script>
+<script src='https://unpkg.com/scroll-out@2.2.3/dist/scroll-out.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>
